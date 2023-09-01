@@ -1,10 +1,10 @@
+import { User } from '@prisma/client';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import prisma from '../../../shared/prisma';
-import { IUpdateUserResponse, IUserResponse } from './user.interface';
-import { checkUserExistency } from './user.utils';
+import { checkUserExistency, responseWithoutPassword } from './user.utils';
 
-const getAllUser = async (): Promise<IUserResponse[]> => {
+const getAllUser = async (): Promise<Partial<User>[]> => {
   const result = await prisma.user.findMany({
     select: {
       id: true,
@@ -14,40 +14,33 @@ const getAllUser = async (): Promise<IUserResponse[]> => {
       contactNo: true,
       address: true,
       profileImg: true,
-      createdAt: true,
-      updatedAt: true,
     },
   });
+
   return result;
 };
 
-const getSingleUser = async (id: string): Promise<IUserResponse | null> => {
+const getSingleUser = async (id: string): Promise<Partial<User> | null> => {
   const result = await prisma.user.findUnique({
     where: {
       id,
     },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      contactNo: true,
-      address: true,
-      profileImg: true,
-      createdAt: true,
-      updatedAt: true,
-    },
   });
+
   if (!result) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
   }
-  return result;
+
+  // Exclude password field from response
+  const resultWithoutPasword = responseWithoutPassword(result, 'password');
+
+  return resultWithoutPasword;
 };
 
 const updateSingleUser = async (
   id: string,
-  payload: IUpdateUserResponse
-): Promise<IUpdateUserResponse | null> => {
+  payload: Partial<User>
+): Promise<Partial<User> | null> => {
   const isExists = await checkUserExistency(id);
   if (!isExists) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
@@ -57,21 +50,14 @@ const updateSingleUser = async (
       id,
     },
     data: payload,
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      contactNo: true,
-      address: true,
-      profileImg: true,
-      createdAt: true,
-      updatedAt: true,
-    },
   });
-  return result;
+  // Exclude password field from response
+  const resultWithoutPasword = responseWithoutPassword(result, 'password');
+
+  return resultWithoutPasword;
 };
 
-const deleteSingleUser = async (id: string): Promise<IUserResponse | null> => {
+const deleteSingleUser = async (id: string): Promise<Partial<User> | null> => {
   const isExists = await checkUserExistency(id);
   if (!isExists) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
@@ -80,19 +66,11 @@ const deleteSingleUser = async (id: string): Promise<IUserResponse | null> => {
     where: {
       id,
     },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      contactNo: true,
-      address: true,
-      profileImg: true,
-      createdAt: true,
-      updatedAt: true,
-    },
   });
-  return result;
+  // Exclude password field from response
+  const resultWithoutPasword = responseWithoutPassword(result, 'password');
+
+  return resultWithoutPasword;
 };
 
 export const UserService = {

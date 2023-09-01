@@ -12,12 +12,13 @@ export const comparePassword = (password: string, hashedPassword: string) => {
   return bcrypt.compareSync(password, hashedPassword);
 };
 
-// Exclude keys from user
+// Exclude password field from user
 export const responseWithoutPassword = (user: User, key: string) => {
   delete user[key as keyof User];
   return user;
 };
 
+//check user exists or not
 export const checkUserExistency = async (email: string) => {
   const result = await prisma.user.findUnique({
     where: {

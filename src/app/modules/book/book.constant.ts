@@ -6,8 +6,3 @@ export const bookFilterableFields = [
 ];
 
 export const bookSearchableFields = ['title', 'author', 'genre'];
-
-export const bookRelationalFields = ['categoryId'];
-export const bookRelationalFieldsMapper = {
-  categoryId: 'category',
-};
