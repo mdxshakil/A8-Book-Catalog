@@ -11,3 +11,11 @@ export type IUserResponse = {
   profileImg: string;
   accessToken?: string;
 };
+
+export type IUpdateUserResponse = {
+  name: string;
+  email: string;
+  contactNo: string;
+  address: string;
+  profileImg: string;
+};

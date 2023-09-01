@@ -6,5 +6,10 @@ const router = express.Router();
 
 router.get('/', auth(ENUM_USER_ROLE.ADMIN), UserController.getAllUser);
 router.get('/:id', auth(ENUM_USER_ROLE.ADMIN), UserController.getSingleUser);
+router.patch(
+  '/:id',
+  auth(ENUM_USER_ROLE.ADMIN),
+  UserController.updateSingleUser
+);
 
 export const UserRoutes = router;
