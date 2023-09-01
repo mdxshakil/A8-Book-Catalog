@@ -8,5 +8,9 @@ export type IUserSignupResponse = {
   contactNo: string;
   address: string;
   profileImg: string;
-  accessToken?: string;
+};
+
+export type ILoginData = {
+  email: string;
+  password: string;
 };
