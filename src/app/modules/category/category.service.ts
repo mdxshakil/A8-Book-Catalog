@@ -21,6 +21,9 @@ const getSingleCategory = async (id: string): Promise<Category | null> => {
     where: {
       id,
     },
+    include: {
+      books: true,
+    },
   });
   if (!result) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Category not found');
