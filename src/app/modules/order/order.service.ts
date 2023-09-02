@@ -40,18 +40,6 @@ const getAllOrder = async (user: IAuthenticatedUser): Promise<Order[]> => {
 
   const result = await prisma.order.findMany({
     where: whereConditions,
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          address: true,
-          contactNo: true,
-          profileImg: true,
-        },
-      },
-    },
   });
   return result;
 };
