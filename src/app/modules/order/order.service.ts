@@ -1,4 +1,4 @@
-import { Order } from '@prisma/client';
+import { Order, UserRole } from '@prisma/client';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import prisma from '../../../shared/prisma';
@@ -16,7 +16,7 @@ const createOrder = async (data: IOrder) => {
   const isExists = await checkBooksExistency(bookIds);
 
   if (!isExists) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid book id');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Book does not exists');
   }
 
   const result = await prisma.order.create({
@@ -32,7 +32,7 @@ const getAllOrder = async (user: IAuthenticatedUser): Promise<Order[]> => {
   let whereConditions = {};
 
   //if role is customer, send only specific orders otherwise send all orders
-  if (role === 'customer') {
+  if (role === UserRole.customer) {
     whereConditions = {
       userId,
     };
@@ -64,7 +64,7 @@ const getSingleOrder = async (
   //check if the order exists or not
   const isExists = checkOrderExistency(orderId);
   if (!isExists) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid order id');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Order does not exists');
   }
 
   const whereConditions: IOrderFetchCondition = {
@@ -72,7 +72,7 @@ const getSingleOrder = async (
   };
 
   //if user is not admin, match userId with the order's userId
-  if (role !== 'admin') {
+  if (role !== UserRole.admin) {
     whereConditions['userId'] = userId;
   }
 
@@ -81,7 +81,7 @@ const getSingleOrder = async (
   });
 
   //throw error in case the order's userId doesnot match with customers id
-  if (user.role !== 'admin' && userId !== result?.userId) {
+  if (user.role !== UserRole.admin && userId !== result?.userId) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access');
   }
 

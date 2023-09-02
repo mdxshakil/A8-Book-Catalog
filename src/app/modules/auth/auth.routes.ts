@@ -6,9 +6,14 @@ const router = express.Router();
 
 router.post(
   '/signup',
-  validateRequest(AuthValidation.create),
+  validateRequest(AuthValidation.signup),
   AuthController.createUser
 );
-router.post('/signin', AuthController.loginUser);
+
+router.post(
+  '/signin',
+  validateRequest(AuthValidation.signIn),
+  AuthController.loginUser
+);
 
 export const AuthRoutes = router;

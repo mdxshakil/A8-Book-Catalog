@@ -65,7 +65,7 @@ model ReviewAndRating {
 model Order {
   id           String      @id @default(uuid())
   userId       String
-  user         User        @relation(fields: [userId], references: [id])
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   status       OrderStatus @default(pending)
   createdAt    DateTime    @default(now())
   orderedBooks Json[]

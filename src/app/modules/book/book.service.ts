@@ -116,7 +116,7 @@ const getBooksByCategoryId = async (
   const isCategoryExists = await checkCategoryExistency(categoryId);
 
   if (!isCategoryExists) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid category id');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Catrgory does not exists');
   }
 
   const result = await prisma.book.findMany({
@@ -159,7 +159,7 @@ const getSingleBook = async (id: string): Promise<Book | null> => {
     },
   });
   if (!result) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid book id');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Book does not exists');
   }
   return result;
 };
@@ -170,7 +170,7 @@ const updateSingleBook = async (
 ): Promise<Book | null> => {
   const isExists = await checkBookExistency(id);
   if (!isExists) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid book id');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Book does not exists');
   }
   const result = await prisma.book.update({
     where: {
@@ -185,8 +185,9 @@ const updateSingleBook = async (
 const deleteSingleBook = async (id: string): Promise<Book | null> => {
   const isExists = await checkBookExistency(id);
   if (!isExists) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid book id');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Book does not exists');
   }
+
   const result = await prisma.book.delete({
     where: {
       id,
