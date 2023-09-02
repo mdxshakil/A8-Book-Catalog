@@ -15,3 +15,8 @@ export type IAuthenticatedUser = {
   userId: string;
   role: string;
 };
+
+export type IOrderFetchCondition = {
+  id: string;
+  userId?: string;
+};

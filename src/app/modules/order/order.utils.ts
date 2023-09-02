@@ -12,3 +12,13 @@ export const checkBooksExistency = async (
   });
   return books.length === bookIds.length;
 };
+
+export const checkOrderExistency = async (id: string) => {
+  const result = await prisma.order.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  return result ? true : false;
+};

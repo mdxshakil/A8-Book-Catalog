@@ -2,8 +2,12 @@ import { Order } from '@prisma/client';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import prisma from '../../../shared/prisma';
-import { IAuthenticatedUser, IOrder } from './order.interface';
-import { checkBooksExistency } from './order.utils';
+import {
+  IAuthenticatedUser,
+  IOrder,
+  IOrderFetchCondition,
+} from './order.interface';
+import { checkBooksExistency, checkOrderExistency } from './order.utils';
 
 const createOrder = async (data: IOrder) => {
   // Extract the bookIds from the orderedBooks array
@@ -51,7 +55,41 @@ const getAllOrder = async (user: IAuthenticatedUser): Promise<Order[]> => {
   });
   return result;
 };
+
+const getSingleOrder = async (
+  orderId: string,
+  user: IAuthenticatedUser
+): Promise<Order | null> => {
+  const { userId, role } = user;
+  //check if the order exists or not
+  const isExists = checkOrderExistency(orderId);
+  if (!isExists) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid order id');
+  }
+
+  const whereConditions: IOrderFetchCondition = {
+    id: orderId, //always match with orderId, whatever the userRole is
+  };
+
+  //if user is not admin, match userId with the order's userId
+  if (role !== 'admin') {
+    whereConditions['userId'] = userId;
+  }
+
+  const result = await prisma.order.findUnique({
+    where: whereConditions,
+  });
+
+  //throw error in case the order's userId doesnot match with customers id
+  if (user.role !== 'admin' && userId !== result?.userId) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access');
+  }
+
+  return result;
+};
+
 export const OrderService = {
   createOrder,
   getAllOrder,
+  getSingleOrder,
 };
