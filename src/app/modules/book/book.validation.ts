@@ -11,9 +11,13 @@ const create = z.object({
     genre: z.string({
       required_error: 'Genre is required',
     }),
-    price: z.number({
-      required_error: 'Price is required',
-    }),
+    price: z
+      .number({
+        required_error: 'Price is required',
+      })
+      .refine(price => price >= 0, {
+        message: 'Price can not be negative',
+      }),
     publicationDate: z.string({
       required_error: 'Publication date is required',
     }),

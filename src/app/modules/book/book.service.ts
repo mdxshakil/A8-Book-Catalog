@@ -18,9 +18,6 @@ const createBook = async (data: Book): Promise<Book> => {
       'Selected category does not exists'
     );
   }
-  if (data.price < 0) {
-    throw new ApiError(httpStatus.NOT_ACCEPTABLE, "Price can't be negative");
-  }
   const result = await prisma.book.create({
     data,
     include: {
